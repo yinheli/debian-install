@@ -1,0 +1,54 @@
+d-i debian-installer/locale string en_US.UTF-8
+d-i keyboard-configuration/xkb-keymap select us
+d-i netcfg/choose_interface select auto
+d-i netcfg/dhcp_timeout string 60
+d-i netcfg/hostname string debian
+d-i mirror/country string manual
+d-i mirror/http/hostname string mirrors.tuna.tsinghua.edu.cn
+d-i mirror/http/directory string /debian
+d-i mirror/http/proxy string
+
+d-i clock-setup/utc boolean true
+d-i time/zone string Asia/Shanghai
+d-i clock-setup/ntp-server string time.windows.com
+
+d-i passwd/root-login boolean true
+d-i passwd/make-user boolean false
+d-i passwd/root-password password 123qwe
+d-i passwd/root-password-again password 123qwe
+
+d-i partman-auto/method string regular
+d-i partman-auto/disk string /dev/sda
+d-i partman-lvm/confirm boolean true
+d-i partman-lvm/confirm_nooverwrite boolean true
+#d-i partman-auto/choose_recipe select atomic
+d-i partman-basicfilesystems/no_swap boolean false
+d-i partman-auto/expert_recipe string                        \
+      boot-root ::                                           \
+              500 5000 -1 xfs                                \
+                      $primary{ } $bootable{ }               \
+                      method{ format } format{ }             \
+                      use_filesystem{ } filesystem{ xfs }    \
+                      mountpoint{ / }                        \
+              .                                               
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+
+
+d-i base-installer/install-recommends boolean false
+d-i pkgsel/run_tasksel boolean false
+d-i pkgsel/include string openssh-server build-essential
+d-i pkgsel/upgrade select none
+
+d-i grub-installer/only_debian boolean true
+d-i grub-installer/with_other_os boolean true
+d-i grub-installer/bootdev  string /dev/sda
+
+d-i preseed/late_command string \
+  apt-install vim wget curl; \
+  in-target sed -i 's/.*PermitRootLogin.*/PermitRootLogin yes/g' /etc/ssh/sshd_config; \
+  in-target sed -i 's/.*UseDNS.*/UseDNS no/g' /etc/ssh/sshd_config
+
+d-i finish-install/reboot_in_progress note
