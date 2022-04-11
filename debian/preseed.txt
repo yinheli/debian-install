@@ -41,10 +41,12 @@ d-i base-installer/install-recommends boolean false
 
 # 预装
 #tasksel tasksel/first multiselect standard, kde-desktop
+tasksel tasksel/first multiselect standard
 
 # 不预装，手工选择
 d-i pkgsel/run_tasksel boolean false
-d-i pkgsel/include string openssh-server build-essential
+# d-i pkgsel/include string openssh-server build-essential
+d-i pkgsel/include string openssh-server
 d-i pkgsel/upgrade select none
 
 d-i grub-installer/only_debian boolean true
@@ -52,7 +54,7 @@ d-i grub-installer/with_other_os boolean true
 d-i grub-installer/bootdev  string /dev/sda
 
 d-i preseed/late_command string \
-  apt-install ca-certificates vim wget curl unzip netcat socat conntrack telnet rsync iptables xfsprogs git git-extras python3-dev python3-venv python3-pip; \
+  apt-install ca-certificates open-vm-tools vim wget curl unzip netcat socat conntrack ebtables ipset ipvsadm telnet rsync iptables xfsprogs git git-extras python3-dev python3-venv python3-pip; \
   in-target sed -i 's/.*PermitRootLogin.*/PermitRootLogin yes/g' /etc/ssh/sshd_config; \
   in-target sed -i 's/.*UseDNS.*/UseDNS no/g' /etc/ssh/sshd_config; \
   in-target rm -f /etc/motd; \
