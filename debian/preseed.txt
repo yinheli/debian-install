@@ -1,8 +1,20 @@
 d-i debian-installer/locale string en_US.UTF-8
 d-i keyboard-configuration/xkb-keymap select us
-d-i netcfg/choose_interface select auto
-d-i netcfg/dhcp_timeout string 60
-d-i netcfg/hostname string debian
+
+d-i netcfg/hostname string k8s-lab-1
+
+# dhcp
+# d-i netcfg/choose_interface select auto
+# d-i netcfg/dhcp_timeout string 60
+
+# manual / static
+d-i netcfg/disable_autoconfig boolean true
+d-i netcfg/get_ipaddress string 192.168.4.101
+d-i netcfg/get_netmask string 255.255.255.0
+d-i netcfg/get_gateway string 192.168.4.1
+d-i netcfg/get_nameservers string 10.127.0.1,10.192.0.1
+d-i netcfg/confirm_static boolean true
+
 d-i mirror/country string manual
 d-i mirror/http/hostname string mirrors.tuna.tsinghua.edu.cn
 d-i mirror/http/directory string /debian
@@ -54,7 +66,7 @@ d-i grub-installer/with_other_os boolean true
 d-i grub-installer/bootdev  string /dev/sda
 
 d-i preseed/late_command string \
-  apt-install ca-certificates open-vm-tools vim wget curl unzip netcat socat conntrack ebtables ipset ipvsadm telnet rsync iptables xfsprogs git git-extras python3-dev python3-venv python3-pip; \
+  apt-install ca-certificates sudo open-vm-tools vim wget curl unzip netcat socat conntrack ebtables ipset ipvsadm telnet rsync iptables xfsprogs git git-extras python3-dev python3-venv python3-pip; \
   in-target sed -i 's/.*PermitRootLogin.*/PermitRootLogin yes/g' /etc/ssh/sshd_config; \
   in-target sed -i 's/.*UseDNS.*/UseDNS no/g' /etc/ssh/sshd_config; \
   in-target rm -f /etc/motd; \
