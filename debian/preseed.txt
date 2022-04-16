@@ -1,19 +1,33 @@
 d-i debian-installer/locale string en_US.UTF-8
 d-i keyboard-configuration/xkb-keymap select us
 
-d-i netcfg/hostname string k8s-lab-1
+d-i netcfg/choose_interface select auto
+# To pick a particular interface instead:
+d-i netcfg/link_wait_timeout string 10
+
 
 # dhcp
-# d-i netcfg/choose_interface select auto
-# d-i netcfg/dhcp_timeout string 60
+d-i netcfg/dhcp_timeout string 60
 
 # manual / static
-d-i netcfg/disable_autoconfig boolean true
-d-i netcfg/get_ipaddress string 192.168.4.101
-d-i netcfg/get_netmask string 255.255.255.0
-d-i netcfg/get_gateway string 192.168.4.1
-d-i netcfg/get_nameservers string 10.127.0.1,10.192.0.1
-d-i netcfg/confirm_static boolean true
+# refer: https://wiki.debian.org/DebianInstaller/Preseed#Preseeding_d-i
+# Note that network configuration options (netcfg/*) cannot be applied via a network-loaded preseed.cfg file, 
+# as the network must be configured before the preseed file can be fetched
+# d-i netcfg/disable_autoconfig boolean true
+# d-i netcfg/use_autoconfig boolean false
+# d-i netcfg/disable_dhcp true
+# d-i netcfg/get_ipaddress string 192.168.4.101
+# d-i netcfg/get_netmask string 255.255.255.0
+# d-i netcfg/get_gateway string 192.168.4.1
+# d-i netcfg/get_nameservers string 192.168.4.10
+# d-i netcfg/confirm_static boolean true
+
+d-i netcfg/hostname string k8s-lab-1
+d-i netcfg/get_hostname string k8s-lab-1
+d-i netcfg/get_domain string example.com
+
+d-i netcfg/wireless_wep string
+d-i hw-detect/load_firmware boolean true
 
 d-i mirror/country string manual
 d-i mirror/http/hostname string mirrors.tuna.tsinghua.edu.cn
@@ -32,13 +46,14 @@ d-i passwd/root-password-again password 12345qwert$
 # 分区
 d-i partman-auto/method string regular
 d-i partman-auto/disk string /dev/sda
+#d-i partman-auto/choose_recipe select atomic
 d-i partman-lvm/confirm boolean true
 d-i partman-lvm/confirm_nooverwrite boolean true
-#d-i partman-auto/choose_recipe select atomic
+
 d-i partman-basicfilesystems/no_swap boolean false
 d-i partman-auto/expert_recipe string                        \
       boot-root ::                                           \
-              500 5000 -1 xfs                                \
+              500 2000 -1 xfs                                \
                       $primary{ } $bootable{ }               \
                       method{ format } format{ }             \
                       use_filesystem{ } filesystem{ xfs }    \
@@ -58,15 +73,18 @@ tasksel tasksel/first multiselect standard
 # 不预装，手工选择
 d-i pkgsel/run_tasksel boolean false
 # d-i pkgsel/include string openssh-server build-essential
-d-i pkgsel/include string openssh-server
+d-i pkgsel/include string openssh-server ca-certificates man sudo open-vm-tools rsync iptables xfsprogs vim wget curl unzip netcat telnet python3-dev python3-venv python3-pip
+# dns-nameservers 仅在安装了 resolvconf 时生效，安装此包将启用 systemd-resolved 可能并不是期望的
 d-i pkgsel/upgrade select none
+
 
 d-i grub-installer/only_debian boolean true
 d-i grub-installer/with_other_os boolean true
 d-i grub-installer/bootdev  string /dev/sda
 
 d-i preseed/late_command string \
-  apt-install ca-certificates sudo open-vm-tools vim wget curl unzip netcat socat conntrack ebtables ipset ipvsadm telnet rsync iptables xfsprogs git git-extras python3-dev python3-venv python3-pip; \
+  apt-install socat conntrack ebtables ipset ipvsadm; \
+  apt-install git git-extras; \
   in-target sed -i 's/.*PermitRootLogin.*/PermitRootLogin yes/g' /etc/ssh/sshd_config; \
   in-target sed -i 's/.*UseDNS.*/UseDNS no/g' /etc/ssh/sshd_config; \
   in-target rm -f /etc/motd; \
@@ -74,6 +92,19 @@ d-i preseed/late_command string \
   in-target touch /root/.ssh/authorized_keys; \
   in-target /bin/sh -c "echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCym4jib3CXtLfGuHjmtmxQ2zl4q7YZugr9xv7vimk7WwesUo5+6mGYsFGBWDyaZmx5P1+wPWxXuL+kAULoYPKNNAfD4/ENaOvkzBHYar0fZeo+vqrI9imSxcsSblGb6vC0S1QbgUvEUDLT8We768yObX75lhA/4MCRNMTtEPAvbj3ai8sEMGipqbEbfzYzpaLc7V/vCu2ZT2vw475PjN1pDe/3eMHNYzYRsWshDXSjZfGxG5BhEd05wm00fNfgmgyi4+FpzmHQ5OjZrNJ8h9nBUr8KO0ZD3WJtM3TnNsxUaE16B3royXbke/yMu1xfBXjSYWHidzZj6DbpMmdeeko1 yinheli@yinheli-mac.local' >> /root/.ssh/authorized_keys"; \
   in-target chmod 600 /root/.ssh/authorized_keys; \
-  in-target chmod 700 /root/.ssh
+  in-target chmod 700 /root/.ssh; \
+  in-target /bin/sh -c "echo 'set mouse=' > /root/.vimrc"; \
+  in-target sed -i 's/debian/hadoop-lab-3/g' /etc/hosts; \
+  in-target /bin/sh -c "echo 'hadoop-lab-3' > /etc/hostname"; \
+  in-target sed -i 's/dhcp/static/g' /etc/network/interfaces; \
+  in-target /bin/sh -c "echo '    address 192.168.4.103/24' >> /etc/network/interfaces"; \
+  in-target /bin/sh -c "echo '    gateway 192.168.4.1' >> /etc/network/interfaces"; \
+  in-target /bin/sh -c "echo '    dns-nameservers 192.168.4.10 192.168.8.13' >> /etc/network/interfaces"; \
+  in-target /bin/sh -c "echo 'nameserver 192.168.4.10' >  /etc/resolv.conf"; \
+  in-target /bin/sh -c "echo 'nameserver 192.168.8.13' >> /etc/resolv.conf"; \
+  in-target /bin/sh -c "echo 'done'"
 
 d-i finish-install/reboot_in_progress note
+
+# d-i cdrom-detect/eject boolean false
+
