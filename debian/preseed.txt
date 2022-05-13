@@ -45,21 +45,46 @@ d-i passwd/root-password password 12345qwert$
 d-i passwd/root-password-again password 12345qwert$
 
 # 分区
-d-i partman-auto/method string regular
+# d-i partman-auto/method string regular
+# d-i partman-auto/disk string /dev/sda
+# d-i partman-lvm/confirm boolean true
+# d-i partman-lvm/confirm_nooverwrite boolean true
+# 
+# d-i partman-basicfilesystems/no_swap boolean false
+# d-i partman-auto/expert_recipe string                        \
+#       boot-root ::                                           \
+#               500 2000 -1 xfs                                \
+#                       $primary{ } $bootable{ }               \
+#                       method{ format } format{ }             \
+#                       use_filesystem{ } filesystem{ xfs }    \
+#                       mountpoint{ / }                        \
+#               .                                               
+# d-i partman-partitioning/confirm_write_new_label boolean true
+# d-i partman/choose_partition select finish
+# d-i partman/confirm boolean true
+# d-i partman/confirm_nooverwrite boolean true
+
+# lvm 分区
 d-i partman-auto/disk string /dev/sda
-#d-i partman-auto/choose_recipe select atomic
+d-i partman-auto/method string lvm
+d-i partman-lvm/device_remove_lvm boolean true
 d-i partman-lvm/confirm boolean true
 d-i partman-lvm/confirm_nooverwrite boolean true
-
 d-i partman-basicfilesystems/no_swap boolean false
-d-i partman-auto/expert_recipe string                        \
-      boot-root ::                                           \
-              500 2000 -1 xfs                                \
-                      $primary{ } $bootable{ }               \
-                      method{ format } format{ }             \
-                      use_filesystem{ } filesystem{ xfs }    \
-                      mountpoint{ / }                        \
-              .                                               
+d-i partman-auto-lvm/no_boot boolean true
+d-i partman-auto/expert_recipe string      \
+  boot-root ::                             \
+    500 5000 -1 xfs                        \
+      method{ lvm }                        \
+      vg_name{ root }                      \
+    .                                      \
+    500 2000 -1 xfs                        \
+      $lvmok{ } in_vg{ root }              \
+      $primary{ } $bootable{ }             \
+      method{ format } format{ }           \
+      use_filesystem{ } filesystem{ xfs }  \
+      mountpoint{ / }                      \
+    .
 d-i partman-partitioning/confirm_write_new_label boolean true
 d-i partman/choose_partition select finish
 d-i partman/confirm boolean true
@@ -98,11 +123,11 @@ d-i preseed/late_command string \
   in-target chmod 600 /root/.ssh/authorized_keys; \
   in-target chmod 700 /root/.ssh; \
   in-target /bin/sh -c "echo 'set mouse=' > /root/.vimrc"; \
-  in-target sed -i 's/debian/k8s-1/g' /etc/hosts; \
-  in-target /bin/sh -c "echo 'k8s-1' > /etc/hostname"; \
+  in-target sed -i 's/debian/node-dev/g' /etc/hosts; \
+  in-target /bin/sh -c "echo 'node-dev' > /etc/hostname"; \
   in-target sed -i 's/dhcp/static/g' /etc/network/interfaces; \
-  in-target /bin/sh -c "echo '    address 192.168.4.111/24' >> /etc/network/interfaces"; \
-  in-target /bin/sh -c "echo '    gateway 192.168.4.1' >> /etc/network/interfaces"; \
+  in-target /bin/sh -c "echo '    address 192.168.8.41/24' >> /etc/network/interfaces"; \
+  in-target /bin/sh -c "echo '    gateway 192.168.8.1' >> /etc/network/interfaces"; \
   in-target /bin/sh -c "echo '    dns-nameservers 192.168.4.10 192.168.8.13' >> /etc/network/interfaces"; \
   in-target /bin/sh -c "echo 'nameserver 192.168.4.10' >  /etc/resolv.conf"; \
   in-target /bin/sh -c "echo 'nameserver 192.168.8.13' >> /etc/resolv.conf"; \
