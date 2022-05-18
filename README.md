@@ -1,3 +1,5 @@
+# debian install
+
 https://wiki.debian.org/DebianInstaller/Preseed#Processing_templates_files
 
 https://www.debian.org/releases/stable/example-preseed.txt
@@ -6,4 +8,10 @@ https://www.debian.org/releases/stable/example-preseed.txt
 
 ```
 auto url=http://192.168.8.39/debian/preseed.txt
+```
+
+## start server
+
+```bash
+python3 -m http.server --directory debian/
 ```
