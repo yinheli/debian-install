@@ -31,9 +31,12 @@ d-i netcfg/wireless_wep string
 d-i hw-detect/load_firmware boolean true
 
 d-i mirror/country string manual
-d-i mirror/http/hostname string mirrors.tuna.tsinghua.edu.cn
+#d-i mirror/http/hostname string mirrors.tuna.tsinghua.edu.cn
+d-i mirror/http/hostname string mirrors.ustc.edu.cn
 d-i mirror/http/directory string /debian
 d-i mirror/http/proxy string
+
+d-i apt-setup/security_host string mirrors.ustc.edu.cn
 
 d-i clock-setup/utc boolean true
 d-i time/zone string Asia/Shanghai
