@@ -115,7 +115,7 @@ d-i preseed/late_command string \
 #  apt-install open-vm-tools; \
   apt-install qemu-guest-agent; \
   apt-install ca-certificates sudo rsync iptables xfsprogs vim wget curl unzip netcat telnet traceroute bash-completion file python3-dev python3-venv python3-pip; \
-#   apt-install build-essential; \
+  apt-install build-essential; \
 #  apt-install socat conntrack ebtables ipset ipvsadm; \
   apt-install git git-extras; \
   in-target sed -i 's/.*PermitRootLogin.*/PermitRootLogin yes/g' /etc/ssh/sshd_config; \
