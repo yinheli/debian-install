@@ -130,9 +130,9 @@ d-i preseed/late_command string \
   in-target sed -i 's/dhcp/static/g' /etc/network/interfaces; \
   in-target /bin/sh -c "echo '    address {{ addr }}' >> /etc/network/interfaces"; \
   in-target /bin/sh -c "echo '    gateway {{ gateway }}' >> /etc/network/interfaces"; \
-  in-target /bin/sh -c "echo '    dns-nameservers 192.168.4.11' >> /etc/network/interfaces"; \
-  in-target /bin/sh -c "echo 'nameserver 192.168.4.10' >  /etc/resolv.conf"; \
-  in-target /bin/sh -c "echo 'nameserver 192.168.8.13' >> /etc/resolv.conf"; \
+  in-target /bin/sh -c "echo '    dns-nameservers 192.168.4.11 192.168.8.11' >> /etc/network/interfaces"; \
+  in-target /bin/sh -c "echo 'nameserver 192.168.4.11' >  /etc/resolv.conf"; \
+  in-target /bin/sh -c "echo 'nameserver 192.168.8.11' >> /etc/resolv.conf"; \
   in-target /bin/sh -c "echo 'done'"
 
 d-i finish-install/reboot_in_progress note
