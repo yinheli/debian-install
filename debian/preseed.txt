@@ -23,8 +23,8 @@ d-i netcfg/dhcp_timeout string 60
 # d-i netcfg/get_nameservers string 192.168.4.10
 # d-i netcfg/confirm_static boolean true
 
-d-i netcfg/hostname string k8s-lab-1
-d-i netcfg/get_hostname string k8s-lab-1
+d-i netcfg/hostname string {{ host }}
+d-i netcfg/get_hostname string {{ host }}
 d-i netcfg/get_domain string example.com
 
 d-i netcfg/wireless_wep string
@@ -35,7 +35,6 @@ d-i mirror/country string manual
 d-i mirror/http/hostname string mirrors.ustc.edu.cn
 d-i mirror/http/directory string /debian
 d-i mirror/http/proxy string
-
 d-i apt-setup/security_host string mirrors.ustc.edu.cn
 
 d-i clock-setup/utc boolean true
