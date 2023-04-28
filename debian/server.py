@@ -9,7 +9,7 @@ packages = [
   'qemu-guest-agent',
   'openssh-server',
   'ca-certificates', 'bash-completion',
-  'file', 'sudo', 'rsync', 'ncdu', 'htop', 'iptables', 'xfsprogs', 'psmisc', 'sysstat', 'apparmor', 'apparmor-utils', 'bsdmainutils',
+  'file', 'sudo', 'rsync', 'ncdu', 'htop', 'iptables', 'xfsprogs', 'psmisc', 'sysstat', 'apparmor', 'apparmor-utils', 'bsdmainutils', 'fuse',
   'vim', 'wget', 'curl', 'unzip', 'netcat',
   'git', 'git-extras',
   'ethtool', 'telnet', 'traceroute', 'tcpdump', 'iputils-ping',
